@@ -87,36 +87,77 @@ def depthFirstSearch(problem: SearchProblem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+    #using stack to implement
     from util import Stack
     dfssearch=Stack() #this stack will dfs 
-    actions=Stack()#this stack will be the result
-    visited=set() #we will mark to avoid loops
-    dfssearch.push(problem.getStartState())
-    while not dfssearch.isEmpty() :
-        node=dfssearch.pop()
-        if problem.isGoalState(node):
-            actions_list=[]               
-            while not actions.isEmpty():
-                 actions_list.insert(0,actions.pop())
-            return actions_list
-        if node is not None and node not in visited:
-            visited.add(node)
-            succs=problem.getSuccessors(node) #succesors
-            for next,move,_  in succs:
-                if next not in visited:
-                    actions.push(move)
-                    dfssearch.push(next) 
-    return []#return an empty list if found nothing 
- 
+    visited=set() #in oder to avoid not needed loops  
+    startin_position=problem.getStartState()
+    path=[] #tracking the path of the grapth 
+    dfssearch.push((startin_position,path)) #creatin a tuple with the state and list with the path 
+    while not dfssearch.isEmpty():
+        current_pos,current_path=dfssearch.pop() #current pos will have the current state and current path
+        if problem.isGoalState(current_pos):
+            return current_path #found the correct paththe the 
+        if current_pos not in visited:
+            visited.add(current_pos) #mark it as visited 
+            succs=problem.getSuccessors(current_pos) #successors
+            for next_position, move , _ in succs:
+                if next_position not in visited:
+                    new_path=current_path+ [move] #we add the non visisted successor if not marked 
+                    dfssearch.push((next_position, new_path)) #we add the new path to the list 
+    return []# dfs , nothing found return an empty list 
+    util.raiseNotDefined()
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    #implement using queue in order to use fifo method as we wont search in depth :except that is similar to dfs 
+    from util import Queue 
+    bfssearch= Queue() #the stack that will dfs 
+    visited=set() #in order to avoid not needed loops 
+    startin_position=problem.getStartState()
+    path=[]#tracking the path
+    bfssearch.push((startin_position,path))
+    while not bfssearch.isEmpty():
+        current_pos, current_path=bfssearch.pop()
+        if problem.isGoalState(current_pos):
+            return current_path #return the result
+        if current_pos not in visited:
+            visited.add(current_pos)
+            succs=problem.getSuccessors(current_pos)
+            for next_position , move , _ in succs:
+                if next_position not in visited:
+                    new_path= current_path+[move]
+                    bfssearch.push((next_position,new_path))
+    return [] #bfs not worked; return an empty list
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
+    #implement the unifrom search with priority queue 
+    from util import PriorityQueue
+    uniformsearch=PriorityQueue()
+    path=[]
+    visited=set() #avoid extra loops
+    uni_dict={} #useful to stores cost of each node 
+    startin_position=problem.getStartState()
+    uniformsearch.push((startin_position,path),0) #pushing to the queue a tuple with its priority 
+    uni_dict[startin_position]=0 #starting position cost is 0
+    while not uniformsearch.isEmpty() :
+        current_pos,current_path=uniformsearch.pop() 
+        if problem.isGoalState(current_pos):
+            return current_path
+        succs=problem.getSuccessors(current_pos) #adding every succesor to the dictionary with its cost 
+        for states in succs:
+                new_path=current_path+[states[1]]
+                if states[0] not in uni_dict or problem.getCostOfActions(new_path) < uni_dict[states[0]]: #check if the key exits or if its cost is smaller than the exitsting cost of the path
+                    cost=problem.getCostOfActions(new_path)
+                    uniformsearch.push((states[0],new_path),cost) #pushing to the queue 
+                    uni_dict[states[0]]=cost
+                    visited.add(states[0])
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
