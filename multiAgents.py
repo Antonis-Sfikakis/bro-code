@@ -340,7 +340,7 @@ def betterEvaluationFunction(currentGameState: GameState):
     distance_of_food= [manhattanDistance(food,pacman_position) for food in FoodList]
     if len(distance_of_food)==0: #empyt list.it should move(prevent loosing points from being stucked) 
             return float('inf')
-    food_points=10.0/(sum(distance_of_food))*number_of_food #all available poiint of food
+    food_points=10.0/(sum(distance_of_food))*number_of_food #all available point of food
     #ghost dinstance 
     ghost_points=0
     for index in range(len(ScaredTimes)):
@@ -350,7 +350,7 @@ def betterEvaluationFunction(currentGameState: GameState):
 
         else:#eatable ghost 
             ghost_points+=10.0/((manhattanDistance(pacman_position,GhostList[index]))+1) *200 
-            #+1 IN ORDER NOT TO DIVIDE BY 
+            #+1 IN ORDER NOT TO DIVIDE BY 0
             #multiplication of 200 beacause 200 are the points of each ghost
     GameScore+= food_points+10.0/(capsules_number+1)+ghost_points
     return GameScore
